@@ -16,6 +16,18 @@ class DossierRepository extends ServiceEntityRepository
         parent::__construct($registry, Dossier::class);
     }
 
+    public function countByYear(string $annee): int
+{
+    return $this->createQueryBuilder('d')
+        ->select('COUNT(d.id)')
+        ->where('d.date_depot >= :debut')
+        ->andWhere('d.date_depot <= :fin')
+        ->setParameter('debut', new \DateTime("{$annee}-01-01"))
+        ->setParameter('fin', new \DateTime("{$annee}-12-31 23:59:59"))
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
     //    /**
     //     * @return Dossier[] Returns an array of Dossier objects
     //     */
