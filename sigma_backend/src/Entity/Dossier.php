@@ -14,9 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Get(),
+        new Get(security: "is_granted('DOSSIER_VIEW', object)"),
         new Post(),
-        new Patch(),
+        new Patch(security: "is_granted('DOSSIER_EDIT', object)"),
     ]
 )]
 #[ORM\HasLifecycleCallbacks]

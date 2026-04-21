@@ -26,6 +26,16 @@ class AppFixtures extends Fixture
         );
         $manager->persist($citoyen);
 
+        // 2. Citoyen
+        $jeanMarc = new User();
+        $jeanMarc->setEmail('jeanmarc@sigma.ci');
+        $jeanMarc->setNomComplet('Jean Marc Koné');
+        $jeanMarc->setRoles(['ROLE_CITOYEN']);
+        $jeanMarc->setPassword(
+            $this->hasher->hashPassword($jeanMarc, 'password123')
+        );
+        $manager->persist($jeanMarc);
+
         // 2. Agent
         $agent = new User();
         $agent->setEmail('agent@sigma.ci');
