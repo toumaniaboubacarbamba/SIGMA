@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dossier {{ dossier.numeroReference }}{% endblock %}
+
+{% block body %}
+<div class="mb-6">
+    <a href="{{ path('app_dossiers') }}" class="text-gray-500 hover:text-green-700 text-sm">← Retour aux dossiers</a>
+</div>
+
+<div class="grid grid-cols-3 gap-6">
+
+    <div class="col-span-2 space-y-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+            <h2 class="font-medium text-gray-800 mb-4">Informations du dossier</h2>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <p class="text-gray-500">Référence</p>
+                    <p class="font-medium text-green-700">{{ dossier.numeroReference }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Date de dépôt</p>
+                    <p class="font-medium">{{ dossier.dateDepot|date('d/m/Y H:i') }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Citoyen</p>
+                    <p class="font-medium">{{ dossier.proprietaire.nomComplet }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Téléphone</p>
+                    <p class="font-medium">{{ dossier.proprietaire.telephone ?? 'Non renseigné' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+            <h2 class="font-medium text-gray-800 mb-4">Valider une étape</h2>
+            <form method="post" action="{{ path('app_dossier_valider', {id: dossier.id}) }}" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Nouvelle étape</label>
+                    <select name="etape_id" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm">
+                        {% for etape in etapes %}
+                        <option value="{{ etape.id }}"
+                            {% if dossier.statutActuel and dossier.statutActuel.id == etape.id %}selected{% endif %}>
+                            {{ etape.ordreSequence }}. {{ etape.libelle }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Commentaire (optionnel)</label>
+                    <textarea name="commentaire" rows="3"
+                              class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm"
+                              placeholder="Ex: Pièce manquante, dossier incomplet..."></textarea>
+                </div>
+                <input type="hidden" name="_token" value="{{ csrf_token('valider_dossier') }}">
+                <button type="submit"
+                        class="bg-green-700 text-white px-6 py-2.5 rounded-lg hover:bg-green-800 text-sm font-medium">
+                    Valider et notifier le citoyen
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-xl p-6 h-fit">
+        <h2 class="font-medium text-gray-800 mb-4">Statut actuel</h2>
+        <span class="bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-xs">
+            {{ dossier.statutActuel ? dossier.statutActuel.libelle : 'Non défini' }}
+        </span>
+    </div>
+
+</div>
+{% endblock %}

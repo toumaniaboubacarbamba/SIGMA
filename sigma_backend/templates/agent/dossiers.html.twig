@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dossiers{% endblock %}
+
+{% block body %}
+<div class="mb-6 flex justify-between items-center">
+    <h1 class="text-2xl font-medium text-gray-800">Dossiers</h1>
+    <span class="text-sm text-gray-500">{{ dossiers|length }} dossier(s)</span>
+</div>
+
+<div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+                <th class="text-left px-6 py-3 text-gray-600 font-medium">Référence</th>
+                <th class="text-left px-6 py-3 text-gray-600 font-medium">Citoyen</th>
+                <th class="text-left px-6 py-3 text-gray-600 font-medium">Date dépôt</th>
+                <th class="text-left px-6 py-3 text-gray-600 font-medium">Statut actuel</th>
+                <th class="text-left px-6 py-3 text-gray-600 font-medium">Action</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for dossier in dossiers %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 font-medium text-green-700">{{ dossier.numeroReference }}</td>
+                <td class="px-6 py-4 text-gray-700">{{ dossier.proprietaire.nomComplet }}</td>
+                <td class="px-6 py-4 text-gray-500">{{ dossier.dateDepot|date('d/m/Y H:i') }}</td>
+                <td class="px-6 py-4">
+                    <span class="bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-xs">
+                        {{ dossier.statutActuel ? dossier.statutActuel.libelle : 'Non défini' }}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <a href="{{ path('app_dossier_detail', {id: dossier.id}) }}"
+                       class="text-green-700 hover:underline text-sm">
+                        Voir →
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-gray-400">Aucun dossier trouvé</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
