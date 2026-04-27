@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Entity\DeviceToken;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
@@ -45,6 +48,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $telephone = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: DeviceToken::class)]
+private Collection $deviceTokens;
 
     public function getId(): ?int
     {
@@ -110,6 +116,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function __construct()
+{
+    $this->deviceTokens = new ArrayCollection();
+}
+
     /**
      * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
      */
@@ -150,4 +161,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getDeviceTokens(): Collection
+{
+    return $this->deviceTokens;
+}
 }

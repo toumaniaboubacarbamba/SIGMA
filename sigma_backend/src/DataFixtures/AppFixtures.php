@@ -10,7 +10,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     // Injection du service de hachage de mot de passe
-    public function __construct(
+     public function __construct(
         private UserPasswordHasherInterface $hasher
     ) {}
 
@@ -62,6 +62,14 @@ class AppFixtures extends Fixture
             $etape->setServiceResponsable($service);
             $manager->persist($etape);
         }
+
+        // Token de test pour Kouassi Aya
+$token = new \App\Entity\DeviceToken();
+$token->setToken('TOKEN_FCM_TEST_KOUASSI_AYA');
+$token->setDeviceType('android');
+$token->setLastSeen(new \DateTime());
+$token->setUser($citoyen);
+$manager->persist($token);
 
         $manager->flush();
     }

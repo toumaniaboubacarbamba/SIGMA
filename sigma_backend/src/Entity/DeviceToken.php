@@ -31,7 +31,7 @@ class DeviceToken
     #[ORM\Column(nullable: true)]
     private ?\DateTime $last_seen = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'deviceTokens')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
