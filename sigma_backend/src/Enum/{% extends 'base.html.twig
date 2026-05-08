@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - SIGMA{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+
+        {# En-tête #}
+        <div>
+            <h2 class="mt-2 text-center text-3xl font-extrabold text-gray-900">
+                SIGMA
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Administration - Suivi de dossiers
+            </p>
+        </div>
+
+        {# Affichage des erreurs #}
+        {% if error %}
+            <div class="rounded-md bg-red-50 p-4 border-l-4 border-red-500">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Utilisateur déjà connecté #}
+        {% if app.user %}
+            <div class="rounded-md bg-green-50 p-4">
+                <p class="text-sm text-green-700">
+                    Vous êtes connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>.
+                    <a href="{{ logout_path() }}" class="font-medium text-green-700 underline hover:text-green-900">Se déconnecter</a>
+                </p>
+            </div>
+        {% endif %}
+
+        {# Formulaire de connexion #}
+        <form method="post" class="mt-8 space-y-6">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="space-y-4">
+                {# Champ Email #}
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Adresse email</label>
+                    <div class="mt-1">
+                        <input type="email"
+                               value="{{ last_username }}"
+                               name="_username"
+                               id="username"
+                               autocomplete="email"
+                               required
+                               autofocus
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="exemple@domaine.ci">
+                    </div>
+                </div>
+
+                {# Champ Mot de passe #}
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
+                    <div class="mt-1">
+                        <input type="password"
+                               name="_password"
+                               id="password"
+                               autocomplete="current-password"
+                               required
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                               placeholder="••••••••">
+                    </div>
+                </div>
+            </div>
+
+            {# Option "Se souvenir de moi" (optionnel) - décommenter si activé dans security.yaml #}
+            {#
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input type="checkbox" name="_remember_me" id="_remember_me" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                    <label for="_remember_me" class="ml-2 block text-sm text-gray-900">Se souvenir de moi</label>
+                </div>
+            </div>
+            #}
+
+            <div>
+                <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-oranges-500 transition duration-150 ease-in-out">
+                    Se connecter
+                </button>
+            </div>
+        </form>
+
+        {# Pied de page (liens supplémentaires éventuels) #}
+        <div class="text-center text-xs text-gray-500 mt-4">
+            SIGMA – Administration sécurisée
+        </div>
+    </div>
+</div>
+{% endblock %}

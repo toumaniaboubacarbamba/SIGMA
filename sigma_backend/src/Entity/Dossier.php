@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Enum\StatutDossier;
 use App\Repository\DossierRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -33,8 +34,8 @@ class Dossier
     #[ORM\Column]
     private ?\DateTime $date_depot = null;
 
-    #[ORM\ManyToOne]
-    private ?Etape $statut_actuel = null;
+    #[ORM\Column(type: 'string', enumType: StatutDossier::class)]
+    private StatutDossier $statut = StatutDossier::BROUILLON;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -69,14 +70,14 @@ class Dossier
         return $this;
     }
 
-    public function getStatutActuel(): ?Etape
+    public function getStatut(): StatutDossier
     {
-        return $this->statut_actuel;
+        return $this->statut;
     }
 
-    public function setStatutActuel(?Etape $statut_actuel): static
+    public function setStatut(StatutDossier $statut): static
     {
-        $this->statut_actuel = $statut_actuel;
+        $this->statut = $statut;
 
         return $this;
     }
