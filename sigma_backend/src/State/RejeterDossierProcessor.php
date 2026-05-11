@@ -6,16 +6,19 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Dossier;
 use App\Enum\StatutDossier;
+use App\Message\SendNotificationMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class RejeterDossierProcessor implements ProcessorInterface
 {
     public function __construct(
         private EntityManagerInterface $em,
         private Security $security,
+        private MessageBusInterface $bus,
     ) {}
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Dossier
@@ -23,17 +26,14 @@ class RejeterDossierProcessor implements ProcessorInterface
         /** @var Dossier $dossier */
         $dossier = $data;
 
-        // Vérification du rôle
         if (!$this->security->isGranted('ROLE_DIRECTEUR')) {
             throw new AccessDeniedHttpException('Seul le Directeur peut rejeter un dossier.');
         }
 
-        // Vérification du statut
         if ($dossier->getStatut() !== StatutDossier::SIGNATURE_DIR) {
             throw new BadRequestHttpException('Ce dossier n\'est pas en attente de signature.');
         }
 
-        // Vérification du motif — obligatoire
         $motif = $context['request']->toArray()['motif_rejet'] ?? null;
         if (empty($motif)) {
             throw new BadRequestHttpException('Le motif de rejet est obligatoire.');
@@ -41,8 +41,21 @@ class RejeterDossierProcessor implements ProcessorInterface
 
         $dossier->setMotifRejet($motif);
         $dossier->setStatut(StatutDossier::REJETE);
-
         $this->em->flush();
+
+        // Notification FCM
+        foreach ($dossier->getProprietaire()->getDeviceTokens() as $deviceToken) {
+            $this->bus->dispatch(new SendNotificationMessage(
+                deviceToken: $deviceToken->getToken(),
+                title: '❌ Dossier rejeté',
+                body: 'Votre dossier ' . $dossier->getNumeroReference() . ' a été rejeté. Motif : ' . $motif,
+                data: [
+                    'dossier_id'  => $dossier->getId(),
+                    'statut'      => $dossier->getStatut()->value,
+                    'motif_rejet' => $motif,
+                ]
+            ));
+        }
 
         return $dossier;
     }
