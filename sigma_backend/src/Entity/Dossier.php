@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Enum\StatutDossier;
 use App\Repository\DossierRepository;
+use App\State\ApprouverDossierProcessor;
+use App\State\RejeterDossierProcessor;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
@@ -18,6 +20,21 @@ use Doctrine\ORM\Mapping as ORM;
         new Get(security: "is_granted('DOSSIER_VIEW', object)"),
         new Post(),
         new Patch(security: "is_granted('DOSSIER_EDIT', object)"),
+
+        new Post(
+            uriTemplate:'/dossiers/{id}/approuver',
+            requirements: ['id' => '\d+'],
+            security: "is_granted('DOSSIER_EDIT', object)",
+            processor: ApprouverDossierProcessor::class,
+            name: 'approuver_dossier'
+        ),
+        new Post(
+            uriTemplate:'/dossiers/{id}/rejeter',
+            requirements: ['id' => '\d+'],
+            security: "is_granted('DOSSIER_EDIT', object)",
+            processor: RejeterDossierProcessor::class,
+            name: 'rejeter_dossier'
+        ),
     ]
 )]
 #[ORM\HasLifecycleCallbacks]
@@ -40,6 +57,9 @@ class Dossier
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $proprietaire = null;
+
+    #[ORM\Column(length: 500, nullable: true)]
+private ?string $motif_rejet = null;
 
     public function getId(): ?int
     {
@@ -98,5 +118,14 @@ class Dossier
     public function setDateDepotAutomatique(): void
     {
         $this->date_depot = new \DateTime();
+    }
+
+    public function getMotifRejet(): ?string{
+        return $this->motif_rejet;
+    }
+
+    public function setMotifRejet(?string $motif_rejet): static{
+        $this->motif_rejet = $motif_rejet;
+        return $this;
     }
 }

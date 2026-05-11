@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Enum\StatutDossier;
 use App\Entity\Dossier;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -51,8 +52,15 @@ class DossierVoter extends Voter
     }
 
     private function canEdit(Dossier $dossier, User $user): bool
-    {
-        // Seul l'agent peut modifier le statut
-        return in_array('ROLE_AGENT', $user->getRoles());
+{
+    if (in_array('ROLE_AGENT', $user->getRoles())) {
+        return true;
     }
+
+    if (in_array('ROLE_DIRECTEUR', $user->getRoles())) {
+        return $dossier->getStatut() === StatutDossier::SIGNATURE_DIR;
+    }
+
+    return false;
+}
 }
