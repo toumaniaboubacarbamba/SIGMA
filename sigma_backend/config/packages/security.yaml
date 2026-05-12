@@ -33,17 +33,20 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: /dashboard
+                default_target_path: /login/redirect
             logout:
                 path: app_logout
                 target: /login
 
     access_control:
-        - { path: ^/api/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/register, roles: PUBLIC_ACCESS }
-        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/, roles: ROLE_AGENT }
+    - { path: ^/api/login, roles: PUBLIC_ACCESS }
+    - { path: ^/api/register, roles: PUBLIC_ACCESS }
+    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/directeur, roles: ROLE_DIRECTEUR }
+    - { path: ^/dashboard, roles: ROLE_AGENT }
+    - { path: ^/dossiers, roles: ROLE_AGENT }
+    - { path: ^/dossier, roles: ROLE_AGENT }
 
 when@test:
     security:

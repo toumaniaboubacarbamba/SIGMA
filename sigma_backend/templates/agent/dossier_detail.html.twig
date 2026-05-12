@@ -10,6 +10,8 @@
 <div class="grid grid-cols-3 gap-6">
 
     <div class="col-span-2 space-y-6">
+
+        {# Informations du dossier #}
         <div class="bg-white border border-gray-200 rounded-xl p-6">
             <h2 class="font-medium text-gray-800 mb-4">Informations du dossier</h2>
             <div class="grid grid-cols-2 gap-4 text-sm">
@@ -26,46 +28,80 @@
                     <p class="font-medium">{{ dossier.proprietaire.nomComplet }}</p>
                 </div>
                 <div>
-                    <p class="text-gray-500">Téléphone</p>
-                    <p class="font-medium">{{ dossier.proprietaire.telephone ?? 'Non renseigné' }}</p>
+                    <p class="text-gray-500">Statut actuel</p>
+                    <span class="bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-xs">
+                        {{ dossier.statut.value }}
+                    </span>
                 </div>
             </div>
         </div>
 
+        {# Actions contextuelles #}
+        {% set statut = dossier.statut.value %}
+
+        {% if statut == 'EN_ANALYSE' %}
         <div class="bg-white border border-gray-200 rounded-xl p-6">
-            <h2 class="font-medium text-gray-800 mb-4">Valider une étape</h2>
-            <form method="post" action="{{ path('app_dossier_valider', {id: dossier.id}) }}" class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-600 mb-1">Nouvelle étape</label>
-                    <select name="etape_id" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm">
-                        {% for etape in etapes %}
-                        <option value="{{ etape.id }}"
-                            {% if dossier.statutActuel and dossier.statutActuel.id == etape.id %}selected{% endif %}>
-                            {{ etape.ordreSequence }}. {{ etape.libelle }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
+            <h2 class="font-medium text-gray-800 mb-4">Actions disponibles</h2>
+            <form method="post" action="{{ path('app_dossier_action', {id: dossier.id}) }}" class="space-y-4">
+                <input type="hidden" name="_token" value="{{ csrf_token('action_dossier') }}">
                 <div>
                     <label class="block text-sm text-gray-600 mb-1">Commentaire (optionnel)</label>
                     <textarea name="commentaire" rows="3"
                               class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm"
                               placeholder="Ex: Pièce manquante, dossier incomplet..."></textarea>
                 </div>
-                <input type="hidden" name="_token" value="{{ csrf_token('valider_dossier') }}">
-                <button type="submit"
-                        class="bg-green-700 text-white px-6 py-2.5 rounded-lg hover:bg-green-800 text-sm font-medium">
-                    Valider et notifier le citoyen
+                <div class="flex gap-3">
+                    <button type="submit" name="action" value="valider"
+                            class="bg-green-700 text-white px-6 py-2.5 rounded-lg hover:bg-green-800 text-sm font-medium">
+                        ✅ Valider l'analyse
+                    </button>
+                    <button type="submit" name="action" value="incomplet"
+                            class="bg-orange-500 text-white px-6 py-2.5 rounded-lg hover:bg-orange-600 text-sm font-medium">
+                        ⚠️ Marquer comme incomplet
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {% elseif statut == 'RECEVABLE' %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+            <h2 class="font-medium text-gray-800 mb-4">Actions disponibles</h2>
+            <form method="post" action="{{ path('app_dossier_action', {id: dossier.id}) }}" class="space-y-4">
+                <input type="hidden" name="_token" value="{{ csrf_token('action_dossier') }}">
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Commentaire (optionnel)</label>
+                    <textarea name="commentaire" rows="3"
+                              class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm"
+                              placeholder="Commentaire pour la Direction..."></textarea>
+                </div>
+                <button type="submit" name="action" value="transmettre"
+                        class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 text-sm font-medium">
+                    📤 Transmettre pour signature
                 </button>
             </form>
         </div>
+
+        {% else %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+            <p class="text-sm text-gray-500">Aucune action disponible pour ce statut.</p>
+        </div>
+        {% endif %}
+
     </div>
 
+    {# Colonne droite — statut #}
     <div class="bg-white border border-gray-200 rounded-xl p-6 h-fit">
         <h2 class="font-medium text-gray-800 mb-4">Statut actuel</h2>
         <span class="bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-xs">
-            {{ dossier.statutActuel ? dossier.statutActuel.libelle : 'Non défini' }}
+            {{ dossier.statut.value }}
         </span>
+
+        {% if dossier.motifRejet %}
+        <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-xs text-red-600 font-medium">Motif de rejet</p>
+            <p class="text-sm text-red-700 mt-1">{{ dossier.motifRejet }}</p>
+        </div>
+        {% endif %}
     </div>
 
 </div>

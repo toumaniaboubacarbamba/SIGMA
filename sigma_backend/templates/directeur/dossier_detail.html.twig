@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dossier {{ dossier.numeroReference }}{% endblock %}
+
+{% block body %}
+<div class="mb-6">
+    <a href="{{ path('directeur_dossiers') }}" class="text-gray-500 hover:text-blue-600 text-sm">
+        ← Retour aux dossiers
+    </a>
+</div>
+
+<div class="grid grid-cols-3 gap-6">
+
+    <div class="col-span-2 space-y-6">
+
+        {# Informations #}
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+            <h2 class="font-medium text-gray-800 mb-4">Informations du dossier</h2>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <p class="text-gray-500">Référence</p>
+                    <p class="font-medium text-blue-600">{{ dossier.numeroReference }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Date de dépôt</p>
+                    <p class="font-medium">{{ dossier.dateDepot|date('d/m/Y H:i') }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Citoyen</p>
+                    <p class="font-medium">{{ dossier.proprietaire.nomComplet }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Statut</p>
+                    <span class="bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-xs">
+                        {{ dossier.statut.value }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {# Décision #}
+        {% if dossier.statut.value == 'SIGNATURE_DIR' %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+            <h2 class="font-medium text-gray-800 mb-4">Décision du Directeur</h2>
+
+            {# Approbation #}
+            <form method="post" action="{{ path('directeur_approuver', {id: dossier.id}) }}" class="mb-4">
+                <input type="hidden" name="_token" value="{{ csrf_token('decision_dossier') }}">
+                <button type="submit"
+                        class="w-full bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800 font-medium">
+                    ✅ Approuver le dossier
+                </button>
+            </form>
+
+            {# Rejet #}
+            <form method="post" action="{{ path('directeur_rejeter', {id: dossier.id}) }}" class="space-y-3">
+                <input type="hidden" name="_token" value="{{ csrf_token('decision_dossier') }}">
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">Motif de rejet <span class="text-red-500">*</span></label>
+                    <textarea name="motif_rejet" rows="3" required
+                              class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm"
+                              placeholder="Expliquez la raison du rejet..."></textarea>
+                </div>
+                <button type="submit"
+                        class="w-full bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-medium">
+                    ❌ Rejeter le dossier
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+            <p class="text-sm text-gray-500">Ce dossier a déjà été traité.</p>
+        </div>
+        {% endif %}
+
+    </div>
+
+    {# Colonne droite #}
+    <div class="bg-white border border-gray-200 rounded-xl p-6 h-fit">
+        <h2 class="font-medium text-gray-800 mb-4">Statut actuel</h2>
+        <span class="bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-xs">
+            {{ dossier.statut.value }}
+        </span>
+
+        {% if dossier.motifRejet %}
+        <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-xs text-red-600 font-medium">Motif de rejet</p>
+            <p class="text-sm text-red-700 mt-1">{{ dossier.motifRejet }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

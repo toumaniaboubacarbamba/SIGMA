@@ -5,25 +5,21 @@
 {% block body %}
     <div class="mb-8">
         <h1 class="text-2xl font-medium text-gray-800">Bonjour, {{ app.user.nomComplet }}</h1>
-        <p class="text-gray-500 mt-1">Tableau de bord — {{ "now" |date("d/m/Y")}}</p>
+        <p class="text-gray-500 mt-1">Tableau de bord — {{ "now"|date("d/m/Y") }}</p>
     </div>
 
     <div class="grid grid-cols-3 gap-6 mb-8">
         <div class="bg-white border border-gray-200 rounded-xl p-6">
-            <p class="text-sm text-gray-500 mb-1"> Dossiers en attente</p>
-            <p class="text-3xl font-medium text-orange-500">0</p>
+            <p class="text-sm text-gray-500 mb-1">Dossiers en analyse</p>
+            <p class="text-3xl font-medium text-orange-500">{{ en_attente }}</p>
         </div>
         <div class="bg-white border border-gray-200 rounded-xl p-6">
-            <p class="text-sm text-gray-500 mb-1"> Traités aujourd'hui</p>
-            <p class="text-3xl font-medium text-orange-500">0</p>
-        </div>
-        <div class="bg-white border border-gray-200 rounded-xl p-6">
-            <p class="text-sm text-gray-500 mb-1"> Total dossiers</p>
-            <p class="text-3xl font-medium text-orange-500">0</p>
+            <p class="text-sm text-gray-500 mb-1">Total dossiers</p>
+            <p class="text-3xl font-medium text-orange-500">{{ total }}</p>
         </div>
     </div>
 
-    <a href="/dossiers" class="inline-block bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800">
+    <a href="{{ path('app_dossiers') }}" class="inline-block bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800">
         Voir les dossiers
     </a>
 {% endblock %}
