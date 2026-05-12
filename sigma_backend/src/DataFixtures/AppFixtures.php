@@ -89,6 +89,12 @@ class AppFixtures extends Fixture
         $dossier2->setStatut(StatutDossier::EN_ANALYSE);
         $manager->persist($dossier2);
 
+        // Dossier en analyse — pour tester l'interface Agent
+        $dossier3 = new Dossier();
+        $dossier3->setProprietaire($jeanMarc);
+        $dossier3->setStatut(StatutDossier::SOUMIS);
+        $manager->persist($dossier3);
+
         // 7. Token FCM
         $token = new \App\Entity\DeviceToken();
         $token->setToken('TOKEN_FCM_TEST_KOUASSI_AYA');
