@@ -7,6 +7,7 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Dossier;
 use App\Enum\StatutDossier;
 use App\Message\SendNotificationMessage;
+use App\Service\HistoriqueStatutService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -19,6 +20,7 @@ class RejeterDossierProcessor implements ProcessorInterface
         private EntityManagerInterface $em,
         private Security $security,
         private MessageBusInterface $bus,
+        private HistoriqueStatutService $historiqueService,
     ) {}
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Dossier
@@ -41,6 +43,14 @@ class RejeterDossierProcessor implements ProcessorInterface
 
         $dossier->setMotifRejet($motif);
         $dossier->setStatut(StatutDossier::REJETE);
+
+        // Enregistrement de la transition
+        $this->historiqueService->enregistrerTransition(
+            $dossier,
+            StatutDossier::REJETE,
+            'Rejeté par le Directeur. Motif : ' . $motif
+        );
+
         $this->em->flush();
 
         // Notification FCM

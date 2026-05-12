@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use App\Enum\StatutDossier;
 use App\Repository\HistoriqueStatutRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -38,8 +39,11 @@ class HistoriqueStatut
     #[ORM\JoinColumn(nullable: false)]
     private ?Dossier $dossier = null;
 
+    #[ORM\Column(type: 'string', enumType: StatutDossier::class, nullable: true)]
+    private ?StatutDossier $statut = null;
+
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Etape $etape = null;
 
     public function getId(): ?int
@@ -91,6 +95,18 @@ class HistoriqueStatut
     public function setDossier(?Dossier $dossier): static
     {
         $this->dossier = $dossier;
+
+        return $this;
+    }
+
+    public function getStatut(): ?StatutDossier
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(?StatutDossier $statut): static
+    {
+        $this->statut = $statut;
 
         return $this;
     }
