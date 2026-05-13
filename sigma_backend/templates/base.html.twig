@@ -1,52 +1,58 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}SIGMA{% endblock %} — Système Intégré de Gestion Administrative</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body class="bg-gray-50 min-h-screen">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>
+			{% block title %}SIGMA
+			{% endblock %}
+			— Système Intégré de Gestion Administrative</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		{% block stylesheets %}{% endblock %}
+	</head>
+	<body class="bg-gray-50 min-h-screen">
 
-        {% if app.user %}
-        <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <span class="text-green-700 font-bold text-xl">SIGMA</span>
-                <span class="text-gray-400 text-sm">Suivi administratif</span>
-            </div>
-            <div class="flex items-center gap-6">
+		{% if app.user %}
+			<nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center">
+				<div class="flex items-center gap-3">
+					<span class="text-green-700 font-bold text-xl">SIGMA</span>
+					<span class="text-gray-400 text-sm">Suivi administratif</span>
+				</div>
+				<div class="flex items-center gap-6">
 
-                {% if is_granted('ROLE_DIRECTEUR') %}
-                    <a href="{{ path('directeur_dashboard') }}" class="text-gray-600 hover:text-blue-600 text-sm">Tableau de bord</a>
-                    <a href="{{ path('directeur_dossiers') }}" class="text-gray-600 hover:text-blue-600 text-sm">Dossiers en attente</a>
+					{% if is_granted('ROLE_ADMIN') %}
+						<a href="{{ path('admin_users_list') }}" class="text-gray-600 hover:text-purple-600 text-sm">Utilisateurs</a>
 
-                {% elseif is_granted('ROLE_AGENT') %}
-                    <a href="{{ path('app_dashboard') }}" class="text-gray-600 hover:text-green-700 text-sm">Tableau de bord</a>
-                    <a href="{{ path('app_dossiers') }}" class="text-gray-600 hover:text-green-700 text-sm">Dossiers</a>
-                {% endif %}
+					{% elseif is_granted('ROLE_DIRECTEUR') %}
+						<a href="{{ path('directeur_dashboard') }}" class="text-gray-600 hover:text-blue-600 text-sm">Tableau de bord</a>
+						<a href="{{ path('directeur_dossiers') }}" class="text-gray-600 hover:text-blue-600 text-sm">Dossiers en attente</a>
 
-                <span class="text-gray-400 text-sm">{{ app.user.nomComplet }}</span>
-                <a href="{{ path('app_logout') }}" class="text-red-500 hover:text-red-700 text-sm">Déconnexion</a>
-            </div>
-        </nav>
-        {% endif %}
+					{% elseif is_granted('ROLE_AGENT') %}
+						<a href="{{ path('app_dashboard') }}" class="text-gray-600 hover:text-green-700 text-sm">Tableau de bord</a>
+						<a href="{{ path('app_dossiers') }}" class="text-gray-600 hover:text-green-700 text-sm">Dossiers</a>
+					{% endif %}
 
-        <main class="max-w-6xl mx-auto px-6 py-8">
-            {% for message in app.flashes('success') %}
-                <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-4">
-                    {{ message }}
-                </div>
-            {% endfor %}
-            {% for message in app.flashes('error') %}
-                <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-4">
-                    {{ message }}
-                </div>
-            {% endfor %}
+					<span class="text-gray-400 text-sm">{{ app.user.nomComplet }}</span>
+					<a href="{{ path('app_logout') }}" class="text-red-500 hover:text-red-700 text-sm">Déconnexion</a>
+				</div>
+			</nav>
+		{% endif %}
 
-            {% block body %}{% endblock %}
-        </main>
+		<main class="max-w-6xl mx-auto px-6 py-8">
+			{% for message in app.flashes('success') %}
+				<div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-4">
+					{{ message }}
+				</div>
+			{% endfor %}
+			{% for message in app.flashes('error') %}
+				<div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-4">
+					{{ message }}
+				</div>
+			{% endfor %}
 
-        {% block javascripts %}{% endblock %}
-    </body>
+			{% block body %}{% endblock %}
+		</main>
+
+		{% block javascripts %}{% endblock %}
+	</body>
 </html>

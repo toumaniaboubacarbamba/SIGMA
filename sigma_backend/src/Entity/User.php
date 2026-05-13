@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ApiResource(
-    operations:[
+    operations: [
         new Get(),
         new Patch()
     ]
@@ -49,8 +49,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $telephone = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isActive = true;
+
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $createdBy = null;
+
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: DeviceToken::class)]
-private Collection $deviceTokens;
+    private Collection $deviceTokens;
 
     public function getId(): ?int
     {
@@ -117,9 +124,9 @@ private Collection $deviceTokens;
     }
 
     public function __construct()
-{
-    $this->deviceTokens = new ArrayCollection();
-}
+    {
+        $this->deviceTokens = new ArrayCollection();
+    }
 
     /**
      * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
@@ -127,7 +134,7 @@ private Collection $deviceTokens;
     public function __serialize(): array
     {
         $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        $data["\0" . self::class . "\0password"] = hash('crc32c', $this->password);
 
         return $data;
     }
@@ -163,7 +170,29 @@ private Collection $deviceTokens;
     }
 
     public function getDeviceTokens(): Collection
-{
-    return $this->deviceTokens;
-}
+    {
+        return $this->deviceTokens;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+        return $this;
+    }
 }

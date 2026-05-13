@@ -21,23 +21,27 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/login/redirect', name: 'login_redirect')]
+    #[Route('/login/redirect', name: 'app_login_redirect')]
     public function loginRedirect(): Response
     {
+        if ($this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('admin_users_list');
+        }
+
         if ($this->isGranted('ROLE_DIRECTEUR')) {
             return $this->redirectToRoute('directeur_dashboard');
         }
 
         if ($this->isGranted('ROLE_AGENT')) {
-            return $this->redirectToRoute('app_dashboard');
+            return $this->redirectToRoute('agent_dashboard');
         }
 
         return $this->redirectToRoute('app_login');
     }
 
-    #[Route('/logout', name: 'app_logout')]
-    public function logout(): void
-    {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
-    }
+    #[Route('/logout', name: 'app_logout', methods: ['GET'])]
+public function logout(): void
+{
+    throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+}
 }

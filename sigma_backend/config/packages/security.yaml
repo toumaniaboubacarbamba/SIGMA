@@ -1,6 +1,6 @@
 security:
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "auto"
 
     providers:
         app_user_provider:
@@ -16,6 +16,7 @@ security:
         api_login:
             pattern: ^/api/login
             stateless: true
+            user_checker: App\Security\UserChecker
             json_login:
                 check_path: /api/login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
@@ -37,16 +38,18 @@ security:
             logout:
                 path: app_logout
                 target: /login
+            user_checker: App\Security\UserChecker
 
     access_control:
-    - { path: ^/api/login, roles: PUBLIC_ACCESS }
-    - { path: ^/api/register, roles: PUBLIC_ACCESS }
-    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
-    - { path: ^/login, roles: PUBLIC_ACCESS }
-    - { path: ^/directeur, roles: ROLE_DIRECTEUR }
-    - { path: ^/dashboard, roles: ROLE_AGENT }
-    - { path: ^/dossiers, roles: ROLE_AGENT }
-    - { path: ^/dossier, roles: ROLE_AGENT }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/directeur, roles: ROLE_DIRECTEUR }
+        - { path: ^/dashboard, roles: ROLE_AGENT }
+        - { path: ^/dossiers, roles: ROLE_AGENT }
+        - { path: ^/dossier, roles: ROLE_AGENT }
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
 when@test:
     security:
