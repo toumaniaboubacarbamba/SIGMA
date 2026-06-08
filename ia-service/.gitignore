@@ -1,0 +1,14 @@
+# Environnement local (ne jamais committer la clé Mistral)
+.env
+
+# Environnements virtuels Python
+.venv/
+venv/
+env/
+
+# Caches Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

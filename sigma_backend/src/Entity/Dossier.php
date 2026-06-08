@@ -10,15 +10,20 @@ use ApiPlatform\Metadata\Post;
 use App\Enum\StatutDossier;
 use App\Repository\DossierRepository;
 use App\State\ApprouverDossierProcessor;
+use App\State\CreateDossierProcessor;
 use App\State\RejeterDossierProcessor;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ApiResource(
+    normalizationContext: ['groups' => ['dossier:read']],
+    denormalizationContext: ['groups' => ['dossier:write']],
     operations: [
         new GetCollection(),
         new Get(security: "is_granted('DOSSIER_VIEW', object)"),
-        new Post(),
+        new Post(processor: CreateDossierProcessor::class),
         new Patch(security: "is_granted('DOSSIER_EDIT', object)"),
 
         new Post(
@@ -43,23 +48,41 @@ class Dossier
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['dossier:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['dossier:read'])]
     private ?string $numero_reference = null;
 
     #[ORM\Column]
+    #[Groups(['dossier:read'])]
     private ?\DateTime $date_depot = null;
 
     #[ORM\Column(type: 'string', enumType: StatutDossier::class)]
+    #[Groups(['dossier:read'])]
     private StatutDossier $statut = StatutDossier::BROUILLON;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['dossier:read', 'dossier:write'])]
     private ?User $proprietaire = null;
 
     #[ORM\Column(length: 500, nullable: true)]
-private ?string $motif_rejet = null;
+    #[Groups(['dossier:read'])]
+    private ?string $motif_rejet = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['dossier:read', 'dossier:write'])]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    #[Groups(['dossier:read'])]
+    private ?string $categorieIa = null;
+
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    #[Groups(['dossier:read'])]
+    private ?float $scoreConfianceIa = null;
 
     public function getId(): ?int
     {
@@ -126,6 +149,42 @@ private ?string $motif_rejet = null;
 
     public function setMotifRejet(?string $motif_rejet): static{
         $this->motif_rejet = $motif_rejet;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCategorieIa(): ?string
+    {
+        return $this->categorieIa;
+    }
+
+    public function setCategorieIa(?string $categorieIa): static
+    {
+        $this->categorieIa = $categorieIa;
+
+        return $this;
+    }
+
+    public function getScoreConfianceIa(): ?float
+    {
+        return $this->scoreConfianceIa;
+    }
+
+    public function setScoreConfianceIa(?float $scoreConfianceIa): static
+    {
+        $this->scoreConfianceIa = $scoreConfianceIa;
+
         return $this;
     }
 }

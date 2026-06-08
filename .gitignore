@@ -1,0 +1,3 @@
+# Secrets à la racine du projet (contient MISTRAL_API_KEY lu par le microservice
+# ia-service/). Ne JAMAIS committer ce fichier.
+/.env
