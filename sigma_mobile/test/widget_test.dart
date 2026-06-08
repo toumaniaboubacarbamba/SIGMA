@@ -1,30 +1,36 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:sigma_mobile/main.dart';
+import 'package:sigma_mobile/entities/dossier.dart';
+import 'package:sigma_mobile/ui/widgets/common/sigma_category_badge.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Le badge IA affiche la catégorie et le score', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: SigmaCategoryBadge(
+            categorie: 'PERMIS_CONSTRUIRE',
+            scorePourcent: 98,
+          ),
+        ),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Permis de construire'), findsOneWidget);
+    expect(find.text('· 98%'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  test('Dossier.fromJson lit la classification IA', () {
+    final dossier = Dossier.fromJson({
+      'id': 30,
+      'numero_reference': 'SIGMA-2026-00004',
+      'statut': 'SOUMIS',
+      'categorieIa': 'PERMIS_CONSTRUIRE',
+      'scoreConfianceIa': 0.98,
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(dossier.estClasse, isTrue);
+    expect(dossier.scorePourcent, 98);
+    expect(dossier.categorieIa, 'PERMIS_CONSTRUIRE');
   });
 }

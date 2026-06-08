@@ -65,7 +65,7 @@ class Dossier
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['dossier:read', 'dossier:write'])]
+    #[Groups(['dossier:read'])]
     private ?User $proprietaire = null;
 
     #[ORM\Column(length: 500, nullable: true)]
